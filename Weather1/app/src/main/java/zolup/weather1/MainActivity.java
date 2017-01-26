@@ -9,15 +9,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.io.IOException;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    EditText et_GeoInput;
-    TextView tv_GeoText;
-    Button btn_GeoStart;
+    EditText et_GeoInput, et_LatInput, et_LonInput;
+    TextView tv_GeoText, tv_AddressText;
+    Button btn_GeoStart, btn_AddressStart;
 
     Geocoder mGeocoder;
     List<Address> mListAddress;
@@ -36,6 +35,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btn_GeoStart = (Button) findViewById(R.id.btn_GeoStart);
         btn_GeoStart.setOnClickListener(this);
         mGeocoder = new Geocoder(this);
+        et_LatInput = (EditText) findViewById(R.id.et_LatInput);
+        et_LonInput = (EditText) findViewById(R.id.et_LonInput);
+        tv_AddressText = (TextView) findViewById(R.id.tv_AddressTextView);
+        btn_AddressStart = (Button) findViewById(R.id.btn_AddressStart);
+        btn_AddressStart.setOnClickListener(this);
     }
 
     @Override
@@ -45,6 +49,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 String result = SearchLocation(String.valueOf(et_GeoInput.getText()));
                 tv_GeoText.setText(result);
                 et_GeoInput.setText(mAddress.getAddressLine(0));
+                break;
+            case R.id.btn_AddressStart:
+                Toast.makeText(this, "latitude : " + et_LatInput, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "longtitude : " + et_LonInput, Toast.LENGTH_SHORT).show();
+                String result2 = SearchAddress(Double.parseDouble(et_LatInput.getText().toString()), Double.parseDouble(et_LonInput.getText().toString()));
+                tv_AddressText.setText(result2);
                 break;
         }
     }
@@ -69,4 +79,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return result;
     }
 
+    public String SearchAddress(double latitude, double longitude) {
+        String result = "";
+        Toast.makeText(this, "latitude : " + latitude, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "longtitude : " + longitude, Toast.LENGTH_SHORT).show();
+        try {
+            mListAddress = mGeocoder.getFromLocation(latitude, longitude, 1);
+            if (mListAddress.size() > 0) {
+                mAddress = mListAddress.get(0);
+                result = "Address : " + mAddress.getAddressLine(0);
+            }
+            else {
+                Toast.makeText(this, "주소 취득 실패", Toast.LENGTH_SHORT).show();
+            }
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
 }
