@@ -12,6 +12,7 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.util.List;
 
+// '주소 -> 위도,경도', '위도,경도 -> 주소' 로 변환하는 코드
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     EditText et_GeoInput, et_LatInput, et_LonInput;

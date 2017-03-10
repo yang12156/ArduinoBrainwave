@@ -6,9 +6,10 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.net.MalformedURLException;
 import java.util.concurrent.ExecutionException;
 
+// 위도,경도값으로 날씨정보(오픈웨더 상 0 ~ 800? 그 숫자값) 불러오는 코드
+// 즉 여기의 weatherId 변수를 분류하여 isRainy변수의 true, false값 설정 구현 필요(아직 안 함)
 public class MainActivity extends AppCompatActivity {
     String latitude, longitude;
     EditText latEditText, lonEditText;

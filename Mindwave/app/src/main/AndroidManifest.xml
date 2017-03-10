@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="zolup.gps1">
+    package="zolup.mindwave">
 
     <application
         android:allowBackup="true"
@@ -15,8 +15,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".AddressActivity1" />
+        <activity android:name=".AddressActivity2" />
+        <activity android:name=".AddressActivity3" />
+        <activity android:name=".AddressActivity4"></activity>
     </application>
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+
 </manifest>
