@@ -18,6 +18,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.io.IOException;
@@ -26,7 +27,21 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.UUID;
 
+import org.achartengine.GraphicalView;
+
+
+
+
+import android.os.Bundle;
+import android.app.Activity;
+
 public class MainActivity extends Activity {
+
+    private static GraphicalView view;
+    private LinearLayout view1;
+    private LineGraph line = new LineGraph();
+    private static Thread thread;
+
     private static final String TAG = "bluetooth2";
     TextView textViewAddress, textViewArduino;
     Geocoder mGeocoder;
@@ -47,13 +62,14 @@ public class MainActivity extends Activity {
     // MAC-address of Bluetooth module (you must edit this line)
     private static String address = "20:16:05:06:03:71";
 
-    private int poorquality, attention, medidation;
+    private int poorquality, attention, meditation;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        view1 = (LinearLayout) findViewById(R.id.lineGraphView);
 
         textViewAddress = (TextView) findViewById(R.id.textViewAddress);
         mGeocoder = new Geocoder(MainActivity.this);
@@ -75,7 +91,7 @@ public class MainActivity extends Activity {
                             String str[] = sbprint.split("-");
                             poorquality = Integer.parseInt(str[0]);
                             attention = Integer.parseInt(str[1]);
-                            medidation = Integer.parseInt(str[2]);
+                            meditation = Integer.parseInt(str[2]);
 
                             textViewArduino.setText("Poorquality : " + str[0] + ", Attention : " + str[1] + ", Meditation : " + str[2] );
                         }
@@ -86,6 +102,36 @@ public class MainActivity extends Activity {
 
         btAdapter = BluetoothAdapter.getDefaultAdapter();       // get Bluetooth adapter
         checkBTState();
+
+        thread = new Thread(){
+            public void run(){
+                for(int i = 0; ; i++){
+                    try {
+                        line.mRenderer.setXAxisMin(i-20);
+                        line.mRenderer.setXAxisMax(i+1);
+                        line.mRenderer.setYAxisMax(100);
+                        line.mRenderer.setYAxisMin(0);
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                    Point p1 = new Point(i, attention); // We got new data
+                    Point p2 = new Point(i, meditation); // We got new data
+                    line.addNewPoints(p1, p2);//Add it to our graph
+                    view.repaint();
+
+                }
+            }
+        };
+        thread.start();
+    }
+
+    //그래프 스타트
+   protected void onStart(){
+        super.onStart();
+        view = line.getView(this);
+       view1.addView(view);
     }
 
     private void startLocationService() {
@@ -161,7 +207,7 @@ public class MainActivity extends Activity {
             e.printStackTrace();
         }
     }
-
+//bt 모르는 부분 시작
     private BluetoothSocket createBluetoothSocket(BluetoothDevice device) throws IOException {
         if(Build.VERSION.SDK_INT >= 10){
             try {
@@ -283,5 +329,6 @@ public class MainActivity extends Activity {
             }
         }
     }
+    //bt모르는부분 끝
 
 }

@@ -1,23 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context="com.example.administrator.another.MainActivity">
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="200dp"
         android:layout_weight="1">
 
         <TextView
-            android:id="@+id/textViewAddress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="92dp"
-            android:text="내 위치"
-            android:textSize="18dp"/>
+            android:text="Hello World!"
+            android:id="@+id/txtArduino" />
 
     </LinearLayout>
 
@@ -27,6 +28,7 @@
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:layout_weight="1">
+
     </LinearLayout>
 
     <LinearLayout
@@ -34,17 +36,6 @@
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:layout_weight="1">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="arduino"
-            android:id="@+id/textViewArduino" />
-
     </LinearLayout>
-
-
-
-
 
 </LinearLayout>

@@ -26,7 +26,6 @@ import android.widget.Toast;
 public class MainActivity extends Activity {
     private static final String TAG = "bluetooth2";
 
-    Button btnLed1, btnLed2, btnLed3, btnpado;
     TextView txtArduino;
     RelativeLayout rlayout;
     Handler h;
@@ -53,11 +52,6 @@ public class MainActivity extends Activity {
 
         setContentView(R.layout.activity_main);
 
-        btnLed1 = (Button) findViewById(R.id.btnLed1);
-        btnLed2 = (Button) findViewById(R.id.btnLed2);
-        btnLed3 = (Button) findViewById(R.id.btnLed3);
-        btnpado = (Button) findViewById(R.id.btnPado);
-
         txtArduino = (TextView) findViewById(R.id.txtArduino);
         rlayout = (RelativeLayout) findViewById(R.id.layout);
         h = new Handler() {
@@ -71,25 +65,9 @@ public class MainActivity extends Activity {
                         if (endOfLineIndex > 0) {
                             String sbprint = sb.substring(0, endOfLineIndex);
                             sb.delete(0, sb.length());
-                            txtArduino.setText("Data from Arduino: " + sbprint);
-                            if(flag%4==3){
-                                rlayout.setBackgroundColor(Color.rgb(255, 255, 255));
-                            }
-                            else if(flag%4==1){
-                                rlayout.setBackgroundColor(Color.rgb(255, 0, 0));
-                            }
-                            else if(flag%4==2){
-                                rlayout.setBackgroundColor(Color.rgb(0, 255, 0));
-                            }
-                            else if(flag%4==0){
-                                rlayout.setBackgroundColor(Color.rgb(0, 0, 255));
-                            }
-                            flag++;
-                            btnLed1.setEnabled(true);
-                            btnLed2.setEnabled(true);
-                            btnLed3.setEnabled(true);
-                            btnpado.setEnabled(true);
 
+                            String str[] = sbprint.split("-");
+                            txtArduino.setText(str[0] + " - " + str[1] + " - " + str[2]);
                         }
                         break;
                 }
@@ -98,31 +76,6 @@ public class MainActivity extends Activity {
 
         btAdapter = BluetoothAdapter.getDefaultAdapter();       // get Bluetooth adapter
         checkBTState();
-
-        btnLed1.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                mConnectedThread.write("1");
-                //Toast.makeText(getBaseContext(), "Turn on First LED", Toast.LENGTH_SHORT).show();
-            }
-        });
-        btnLed2.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                mConnectedThread.write("2");
-                //Toast.makeText(getBaseContext(), "Turn on Second LED", Toast.LENGTH_SHORT).show();
-            }
-        });
-        btnLed3.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                mConnectedThread.write("3");
-                //Toast.makeText(getBaseContext(), "Turn on Third LED", Toast.LENGTH_SHORT).show();
-            }
-        });
-        btnpado.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                mConnectedThread.write("0");
-                //Toast.makeText(getBaseContext(), "Turn on all LEDs", Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     private BluetoothSocket createBluetoothSocket(BluetoothDevice device) throws IOException {
