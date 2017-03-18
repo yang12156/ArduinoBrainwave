@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 import org.achartengine.GraphicalView;
 
@@ -37,32 +38,32 @@ import android.app.Activity;
 
 public class MainActivity extends Activity {
 
-    private static GraphicalView view;
-    private LinearLayout view1;
+    private static GraphicalView view, viewDifference;
+    private LinearLayout view1, view2;
     private LineGraph line = new LineGraph();
+    private LineGraph2 line2 = new LineGraph2();
     private static Thread thread;
 
-    private static final String TAG = "bluetooth2";
-    TextView textViewAddress, textViewArduino;
+    TextView textViewAddress, textViewArduino, textViewWeather;
     Geocoder mGeocoder;
     List<Address> mListAddress;
     Address mAddress;
     Handler h;
+    boolean flag = false;
+    boolean flag2 = false;
 
+    private static final String TAG = "bluetooth2";
     final int RECIEVE_MESSAGE = 1;        // Status  for Handler
     private BluetoothAdapter btAdapter = null;
     private BluetoothSocket btSocket = null;
     private StringBuilder sb = new StringBuilder();
-    //private static int flag = 0;
     private ConnectedThread mConnectedThread;
-
-    // SPP UUID service
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-
-    // MAC-address of Bluetooth module (you must edit this line)
     private static String address = "20:16:05:06:03:71";
-
     private int poorquality, attention, meditation;
+
+    OpenWeatherTask openWeatherTask;
+    Rain rain = new Rain();
 
 
     @Override
@@ -70,10 +71,14 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         view1 = (LinearLayout) findViewById(R.id.lineGraphView);
+        view2 = (LinearLayout) findViewById(R.id.lineGraphView2);
 
         textViewAddress = (TextView) findViewById(R.id.textViewAddress);
         mGeocoder = new Geocoder(MainActivity.this);
         textViewArduino = (TextView) findViewById(R.id.textViewArduino);
+        textViewWeather = (TextView) findViewById(R.id.textViewWeather);
+
+        openWeatherTask = new OpenWeatherTask();
 
         startLocationService();
 
@@ -92,6 +97,7 @@ public class MainActivity extends Activity {
                             poorquality = Integer.parseInt(str[0]);
                             attention = Integer.parseInt(str[1]);
                             meditation = Integer.parseInt(str[2]);
+                            flag = !flag;
 
                             textViewArduino.setText("Poorquality : " + str[0] + ", Attention : " + str[1] + ", Meditation : " + str[2] );
                         }
@@ -106,21 +112,25 @@ public class MainActivity extends Activity {
         thread = new Thread(){
             public void run(){
                 for(int i = 0; ; i++){
-                    try {
-                        line.mRenderer.setXAxisMin(i-20);
-                        line.mRenderer.setXAxisMax(i+1);
-                        line.mRenderer.setYAxisMax(100);
-                        line.mRenderer.setYAxisMin(0);
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
+                    while(flag == flag2);
+                    flag2 = flag;
+
+                    line.mRenderer.setXAxisMin(i-20);
+                    line.mRenderer.setXAxisMax(i+1);
+                    line.mRenderer.setYAxisMax(100);
+                    line.mRenderer.setYAxisMin(0);
+
+                    line2.mRenderer.setXAxisMin(i-20);
+                    line2.mRenderer.setXAxisMax(i+1);
+                    line2.mRenderer.setYAxisMax(100);
+                    line2.mRenderer.setYAxisMin(-100);
                     Point p1 = new Point(i, attention); // We got new data
                     Point p2 = new Point(i, meditation); // We got new data
                     line.addNewPoints(p1, p2);//Add it to our graph
+                    Point p = new Point(i, attention - meditation);
+                    line2.addNewPoints(p);
                     view.repaint();
-
+                    viewDifference.repaint();
                 }
             }
         };
@@ -132,6 +142,8 @@ public class MainActivity extends Activity {
         super.onStart();
         view = line.getView(this);
        view1.addView(view);
+       viewDifference = line2.getView(this);
+       view2.addView(viewDifference);
     }
 
     private void startLocationService() {
@@ -140,7 +152,7 @@ public class MainActivity extends Activity {
 
         // 위치 정보를 받을 리스너 생성
         GPSListener gpsListener = new GPSListener();
-        long minTime = 10000;
+        long minTime = 100000;
         float minDistance = 0;
 
         try {
@@ -164,6 +176,7 @@ public class MainActivity extends Activity {
                 Double latitude = lastLocation.getLatitude();
                 Double longitude = lastLocation.getLongitude();
                 SearchAddress(latitude, longitude);
+                SearchWeather(latitude, longitude);
             }
         } catch(SecurityException ex) {
             ex.printStackTrace();
@@ -181,6 +194,7 @@ public class MainActivity extends Activity {
             Log.i("GPSListener", msg);
 
             SearchAddress(latitude, longitude);
+            SearchWeather(latitude, longitude);
             Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
         }
 
@@ -207,6 +221,19 @@ public class MainActivity extends Activity {
             e.printStackTrace();
         }
     }
+
+    public void SearchWeather(double latitude, double longitude) {
+        try {
+            int weatherId = openWeatherTask.execute(Double.toString(latitude), Double.toString(longitude)).get();
+            boolean isRainy = rain.SearchIsRainy(weatherId);
+            textViewWeather.setText(String.valueOf(isRainy));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+    }
+
 //bt 모르는 부분 시작
     private BluetoothSocket createBluetoothSocket(BluetoothDevice device) throws IOException {
         if(Build.VERSION.SDK_INT >= 10){
