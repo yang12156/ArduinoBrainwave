@@ -31,12 +31,24 @@ public class LineGraph2 {
         renderer1.setFillPoints(true);
         renderer1.setLineWidth(3);
 
-        //Enable Zoom
-        //mRenderer.setZoomButtonsVisible(true);
+        mRenderer.setChartTitle("명상도와 집중도의 차이");
         mRenderer.setXTitle("시간");
-        mRenderer.setYTitle("명상도와 집중도의 차이");
-        mRenderer.setAxisTitleTextSize(50); // x, y축 항목 글자크기
-        mRenderer.setLegendTextSize(50); // 선 이름 크기
+        mRenderer.setAxisTitleTextSize(40); // x, y축 항목 글자크기
+        mRenderer.setLegendTextSize(40); // 선 이름 크기
+        mRenderer.setLabelsTextSize(30); // x, y축 숫자 크기
+        mRenderer.setChartTitleTextSize(50);
+        mRenderer.setLegendHeight(60);
+        mRenderer.setYLabelsPadding(35);
+        mRenderer.setMarginsColor(Color.DKGRAY);
+        mRenderer.setMargins(new int[] {90, 70, 60, 10});
+
+        //배경격자무늬
+        mRenderer.setShowGridX(true);
+        mRenderer.setGridColor(Color.LTGRAY);
+        mRenderer.setXLabels(20);
+        mRenderer.setZoomEnabled(false, false);
+        mRenderer.setPanEnabled(true, false);
+
 
         //Add single renderer to multiple renderer
         mRenderer.addSeriesRenderer(renderer1);

@@ -61,9 +61,16 @@ public class MainActivity extends Activity {
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     private static String address = "20:16:05:06:03:71";
     private int poorquality, attention, meditation;
+    private int avgFlag=0;
+    private int sumPoor=0,sumAtt=0,sumMedi=0;
+    private int avgFlagNum=5; //초기값 받아오는 횟수 
+    private int avgFlag2=0;
+    private int avgPoor,avgAtt,avgMedi;
+
 
     OpenWeatherTask openWeatherTask;
     Rain rain = new Rain();
+    public Handler handler;
 
 
     @Override
@@ -79,9 +86,9 @@ public class MainActivity extends Activity {
         textViewWeather = (TextView) findViewById(R.id.textViewWeather);
 
         openWeatherTask = new OpenWeatherTask();
-
+/*
         startLocationService();
-
+*/
         h = new Handler() {
             public void handleMessage(android.os.Message msg) {
                 switch (msg.what) {
@@ -99,7 +106,24 @@ public class MainActivity extends Activity {
                             meditation = Integer.parseInt(str[2]);
                             flag = !flag;
 
-                            textViewArduino.setText("Poorquality : " + str[0] + ", Attention : " + str[1] + ", Meditation : " + str[2] );
+                            textViewArduino.setText("Poorquality : " + str[0] + ", Attention : " + str[1] + ", Meditation : " + str[2]+"  AVGpoor : " + avgPoor + ", AVGatt: " + avgAtt + ", AVGmedi : " + avgMedi);
+                            if(poorquality==0){
+                                if (avgFlag < avgFlagNum) {//60
+                                    sumPoor += poorquality;
+                                    sumAtt += attention;
+                                    sumMedi += meditation;
+                                    avgFlag++;
+                                    textViewArduino.setText("sumPoor : " + sumPoor + ", SumATT : " + sumAtt + ", SumMedi : " + sumMedi);
+                                } else {
+                                    if (avgFlag2 < 1) {
+                                        avgPoor = sumPoor / avgFlagNum;
+                                        avgAtt = sumAtt / avgFlagNum;
+                                        avgMedi = sumMedi / avgFlagNum;
+                                        textViewArduino.setText("AVGpoor : " + avgPoor + ", AVGatt: " + avgAtt + ", AVGmedi : " + avgMedi);
+                                        avgFlag2++;
+                                    }
+                                }
+                            }
                         }
                         break;
                 }
@@ -136,6 +160,8 @@ public class MainActivity extends Activity {
         };
         thread.start();
     }
+
+
 
     //그래프 스타트
    protected void onStart(){

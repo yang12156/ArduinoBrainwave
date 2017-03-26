@@ -22,22 +22,6 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/lineGraphView"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_weight="1">
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/lineGraphView2"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_weight="1">
-    </LinearLayout>
-
-    <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="200dp"
@@ -57,8 +41,20 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/lineGraphView"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_weight="1">
+    </LinearLayout>
 
-
-
+    <LinearLayout
+        android:id="@+id/lineGraphView2"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_weight="1">
+    </LinearLayout>
 
 </LinearLayout>
